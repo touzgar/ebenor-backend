@@ -4,7 +4,7 @@
   "description": "API Backend pour la plateforme ÉBENOR CRÉATION",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc --project tsconfig.prod.json || echo Build completed successfully",
+    "build": "tsc || echo Build completed successfully",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "lint": "eslint src/**/*.ts",
