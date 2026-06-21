@@ -6,10 +6,9 @@ WORKDIR /app
 # Copier les fichiers de dépendances
 COPY package*.json ./
 COPY tsconfig.json ./
-COPY tsconfig.prod.json ./
 
-# Installer les dépendances
-RUN npm ci --only=production && npm cache clean --force
+# Installer TOUTES les dépendances (including devDependencies for TypeScript)
+RUN npm ci && npm cache clean --force
 
 # Copier le code source
 COPY src/ ./src/
@@ -26,10 +25,12 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S ebenor -u 1001
 
-# Copier les dépendances de production
-COPY --from=builder /app/node_modules ./node_modules
+# Installer SEULEMENT les dépendances de production
+COPY package*.json ./
+RUN npm ci --only=production && npm cache clean --force
+
+# Copier les fichiers buildés
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
 
 # Créer les répertoires nécessaires
 RUN mkdir -p logs uploads && \
