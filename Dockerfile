@@ -1,5 +1,5 @@
 # Dockerfile pour production
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -17,7 +17,7 @@ COPY src/ ./src/
 RUN npm run build
 
 # Image de production
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 
 WORKDIR /app
 
@@ -48,7 +48,7 @@ ENV PORT=5000
 CMD ["npm", "start"]
 
 # Dockerfile pour développement
-FROM node:18-alpine AS development
+FROM node:20-alpine AS development
 
 WORKDIR /app
 
