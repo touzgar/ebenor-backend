@@ -18,7 +18,7 @@ COPY src/ ./src/
 RUN npm run build
 
 # Image de production
-FROM node:20-alpine AS production
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -47,31 +47,3 @@ ENV PORT=5000
 
 # Commande de démarrage
 CMD ["npm", "start"]
-
-# Dockerfile pour développement
-FROM node:20-alpine AS development
-
-WORKDIR /app
-
-# Installer les dépendances globales
-RUN npm install -g tsx
-
-# Copier les fichiers de configuration
-COPY package*.json ./
-COPY tsconfig.json ./
-
-# Installer toutes les dépendances (dev incluses)
-RUN npm install
-
-# Copier le code source
-COPY src/ ./src/
-
-# Exposer le port
-EXPOSE 5000
-
-# Variables d'environnement pour le développement
-ENV NODE_ENV=development
-ENV PORT=5000
-
-# Commande de développement avec hot reload
-CMD ["npm", "run", "dev"]
