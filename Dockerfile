@@ -6,6 +6,7 @@ WORKDIR /app
 # Copier les fichiers de dépendances
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY tsconfig.prod.json ./
 
 # Installer les dépendances
 RUN npm ci --only=production && npm cache clean --force
