@@ -21,11 +21,13 @@ const consoleFormat = winston.format.combine(
 );
 
 // Configuration du logger
-export const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: logFormat,
-  defaultMeta: { service: 'ebenor-api' },
-  transports: [
+const transports: winston.transport[] = [];
+
+// Only use file logging if not in serverless environment (Vercel)
+const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+if (!isServerless) {
+  transports.push(
     // Logs d'erreur dans un fichier séparé
     new winston.transports.File({
       filename: path.join(process.env.LOG_FILE_PATH || './logs', 'error.log'),
@@ -33,22 +35,28 @@ export const logger = winston.createLogger({
       maxsize: 5242880, // 5MB
       maxFiles: 5,
     }),
-    
     // Tous les logs dans un fichier combiné
     new winston.transports.File({
       filename: path.join(process.env.LOG_FILE_PATH || './logs', 'combined.log'),
       maxsize: 5242880, // 5MB
       maxFiles: 5,
-    }),
-  ],
-});
-
-// Ajouter la console en développement
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: consoleFormat,
-  }));
+    })
+  );
 }
+
+// Always add console transport
+transports.push(
+  new winston.transports.Console({
+    format: consoleFormat,
+  })
+);
+
+export const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: logFormat,
+  defaultMeta: { service: 'ebenor-api' },
+  transports,
+});
 
 // Middleware de logging des requêtes
 export const requestLogger = (req: any, res: any, next: any): void => {
